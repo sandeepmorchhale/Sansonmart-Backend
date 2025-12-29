@@ -31,7 +31,6 @@ async function registeruser(req, res) {
       email: user.email,
       mobile: user.mobilenumber,
       address:user.address,
-      pass: user.password
     }
   })
 }
@@ -65,77 +64,80 @@ async function loginuser(req, res) {
     }
   })
 }
-function logoutuser(req, res) {
 
-   res.clearCookie("token", {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: false
-    })
+function logoutuser(req, res) {
+  // Settings MUST match the login cookie settings
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,      // 👈 Change to true
+    sameSite: "none"   // 👈 Change to "none"
+  });
+
   res.status(200).json({
     message: "your log out successfully"
-
-  })
+  });
 }
 
 
 const adminlogin = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     if (email !== process.env.ADMIN_EMAIL) {
-      return res.status(401).json({ message: "Invalid admin email" })
+      return res.status(401).json({ message: "Invalid admin email" });
     }
 
     if (password !== process.env.ADMIN_PASSWORD) {
-      return res.status(401).json({ message: "Invalid admin password" })
+      return res.status(401).json({ message: "Invalid admin password" });
     }
 
     const token = jwt.sign(
       { role: "admin" },
       process.env.JWT_SECRET_ADMIN,
       { expiresIn: "1d" }
-    )
+    );
 
+    // 👇 FOR DEPLOYMENT (Render + Vercel)
     res.cookie("admintoken", token, {
       httpOnly: true,
-      secure: false,      // localhost
-      sameSite: "lax",    // 🔥 IMPORTANT
+      secure: true,       // 👈 Change to true
+      sameSite: "none",   // 👈 Change to "none"
       maxAge: 24 * 60 * 60 * 1000
-    })
+    });
 
     res.status(200).json({
       message: "Admin login successful"
-    })
+    });
 
   } catch (error) {
     res.status(500).json({
       message: "Server error",
       error: error.message
-    })
+    });
   }
-}
+};
 
 
 const adminlogout = (req, res) => {
   try {
+    // Settings MUST match admin login settings
     res.clearCookie("admintoken", {
       httpOnly: true,
-      sameSite: "strict",
-      secure: false
-    })
+      secure: true,      // 👈 Change to true
+      sameSite: "none"   // 👈 Change to "none"
+    });
 
     return res.status(200).json({
       message: "Admin logout successfully"
-    })
+    });
 
   } catch (error) {
     return res.status(500).json({
       message: "Logout failed",
       error: error.message
-    })
+    });
   }
-}
+};
 
 
 const adminprotaction = async (req, res) => {
