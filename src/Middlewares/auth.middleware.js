@@ -2,15 +2,22 @@ const usermodal = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 
 const authusermiddleware = async (req, res, next) => {
+  
+  // 👇 1. DEBUGGING LOGS (Ye batayenge ki cookie aa rahi hai ya nahi)
+  console.log("🔍 Incoming Request from:", req.headers.origin);
+  console.log("🍪 Cookies Received on Server:", req.cookies); 
+
   const token = req.cookies.token;
 
   if (!token) {
+    console.log("❌ Token Missing!"); // Log agar token nahi mila
     return res.status(401).json({
       message: "Please login to access this resource"
     });
   }
 
   try {
+    // 👇 2. Spelling Check: JWT_SECREAT hi hona chahiye (.env file ke hisaab se)
     const decoded = jwt.verify(token, process.env.JWT_SECREAT);
 
     const user = await usermodal.findById(decoded.id).select("-password");
@@ -22,6 +29,7 @@ const authusermiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log("❌ Token Verification Failed:", error.message); // Log agar verify fail hua
     res.status(401).json({
       message: "Session expired, please login again"
     });
