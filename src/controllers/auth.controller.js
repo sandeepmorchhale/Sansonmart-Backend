@@ -34,6 +34,7 @@ async function registeruser(req, res) {
     }
   })
 }
+
 async function loginuser(req, res) {
 
   const { name, email, password } = req.body
@@ -53,7 +54,12 @@ async function loginuser(req, res) {
     })
   }
   const token = jwt.sign({ id: ifuserexist._id }, process.env.JWT_SECREAT)
-  res.cookie("token", token)
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true, 
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
 
   res.status(200).json({
     message: "login successfully",
@@ -66,7 +72,6 @@ async function loginuser(req, res) {
 }
 
 function logoutuser(req, res) {
-  // Settings MUST match the login cookie settings
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,      // 👈 Change to true
