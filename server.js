@@ -6,7 +6,5 @@ const mongodb = require("./src/db/db")
 mongodb()
 
 app.listen(process.env.PORT, () => {
-    console.log("server is started")
+console.log("server is started")
 })
-
-

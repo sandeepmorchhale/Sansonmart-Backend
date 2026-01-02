@@ -19,14 +19,39 @@ const orderSchema = new mongoose.Schema({
             },
         }
     ],
-    shippingAddress:
-        [{
-            username: { type: String, required: true },
-            email: { type: String, required: true },
-            address: { type: String, required: true },
-            mobile: { type: String, required: true },
-        }],
+    shippingAddress: {  // Isko array [] se object {} kar diya hai, usually address ek hi hota hai
+        username: { type: String, required: true },
+        email: { type: String, required: true },
+        address: { type: String, required: true },
+        mobile: { type: String, required: true },
+    },
     totalPrice: { type: Number, required: true },
+    
+    // --- NEW PAYMENT FIELDS (ADD THESE) ---
+    paymentMethod: { 
+        type: String, 
+        required: true, 
+        default: "COD" // "COD" or "Online"
+    },
+    paymentStatus: {
+        type: String,
+        default: "Pending" // "Pending" or "Paid"
+    },
+    isPaid: {
+        type: Boolean,
+        default: false,
+    },
+    paidAt: {
+        type: Date,
+    },
+    paymentResult: { // Razorpay IDs save karne ke liye
+        id: String,
+        status: String,
+        update_time: String,
+        email_address: String,
+    },
+    // --------------------------------------
+
     status: {
         type: String,
         required: true,
